@@ -4,7 +4,7 @@
 
 開發環境：
 - Visual Studio 2022
-- .NET 7
+- .NET 8
 
 # License #
 [Mit License](http://opensource.org/licenses/mit-license.php)

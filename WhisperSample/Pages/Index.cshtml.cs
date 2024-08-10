@@ -2,6 +2,7 @@
 using Azure.AI.OpenAI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using OpenAI.Audio;
 using System.Drawing;
 
 namespace WhisperSample.Pages
@@ -19,20 +20,17 @@ namespace WhisperSample.Pages
         {
             var apikey = "{your api key}";
             var apiUrl = "https://{your openai endpoint}.openai.azure.com";
+            var deploymentName = "{your deploy}";
 
-            var client = new OpenAIClient(new Uri(apiUrl), new AzureKeyCredential(apikey));
+            var client = new AzureOpenAIClient(new Uri(apiUrl), new AzureKeyCredential(apikey)).GetAudioClient(deploymentName);
             try
             {
                 var transcriptionOptions = new AudioTranscriptionOptions()
                 {
-                    AudioData = BinaryData.FromStream(voicefile.OpenReadStream()),
                     ResponseFormat = AudioTranscriptionFormat.Verbose,
                 };
 
-                Response<AudioTranscription> transcriptionResponse = await client.GetAudioTranscriptionAsync(
-                    deploymentId: "{your deploy}",
-                    transcriptionOptions);
-                AudioTranscription transcription = transcriptionResponse.Value;
+                AudioTranscription transcription = await client.TranscribeAudioAsync(voicefile.OpenReadStream(), voicefile.FileName, transcriptionOptions);
 
                 return Content(transcription.Text);
             }
